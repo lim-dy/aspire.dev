@@ -35,12 +35,12 @@ To access these types and APIs for expressing them, add the [📦 Aspire.Hosting
 
 ### Add Azure Blob Storage resource
 
-In your AppHost project, register the Azure Blob Storage integration by chaining a call to `AddBlobs` on the `IResourceBuilder<IAzureStorageResource>` instance returned by `AddAzureStorage`. The following example demonstrates how to add an Azure Blob Storage resource named `storage` and a blob container named `blobs`:
+In your AppHost project, register the Azure Blob Storage integration by chaining a call to `AddBlobs` on the `IResourceBuilder<IAzureStorageResource>` instance returned by `AddAzureBlobServiceClient`. The following example demonstrates how to add an Azure Blob Storage resource named `storage` and a blob container named `blobs`:
 
 ```csharp title="C# — AppHost.cs"
 var builder = DistributedApplication.CreateBuilder(args);
 
-var blobs = builder.AddAzureStorage("storage")
+var blobs = builder.AddAzureBlobServiceClient("storage")
     .AddBlobs("blobs");
 
 builder.AddProject<Projects.ExampleProject>()
@@ -58,7 +58,7 @@ The preceding code:
 - Adds the `blobs` resource to the `ExampleProject` and waits for it to be ready before starting the project.
 
 <Aside type="caution">
-When you call `AddAzureStorage`, it implicitly calls `AddAzureProvisioning`—which adds support for generating Azure resources dynamically during app startup. The app must configure the appropriate subscription and location. For more information, see [Local provisioning: Configuration](/integrations/cloud/azure/local-provisioning/#configuration).
+When you call `AddAzureBlobServiceClient`, it implicitly calls `AddAzureProvisioning`—which adds support for generating Azure resources dynamically during app startup. The app must configure the appropriate subscription and location. For more information, see [Local provisioning: Configuration](/integrations/cloud/azure/local-provisioning/#configuration).
 </Aside>
 
 ### Connect to an existing Azure Storage account
@@ -71,7 +71,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 var existingStorageName = builder.AddParameter("existingStorageName");
 var existingStorageResourceGroup = builder.AddParameter("existingStorageResourceGroup");
 
-var storageaccount = builder.AddAzureStorage("storage")
+var storageaccount = builder.AddAzureBlobServiceClient("storage")
     .AsExisting(existingStorageName, existingStorageResourceGroup)
     .AddBlobs("blobs");
 
@@ -103,7 +103,7 @@ The port that they're listening on is dynamic by default. When the container sta
 ```csharp title="C# — AppHost.cs"
 var builder = DistributedApplication.CreateBuilder(args);
 
-var storage = builder.AddAzureStorage("storage")
+var storage = builder.AddAzureBlobServiceClient("storage")
   .RunAsEmulator(azurite =>
   {
       azurite.WithBlobPort(27000)
@@ -129,7 +129,7 @@ To configure the Azurite container with a persistent lifetime, call the `WithLif
 ```csharp title="C# — AppHost.cs"
 var builder = DistributedApplication.CreateBuilder(args);
 
-var storage = builder.AddAzureStorage("storage")
+var storage = builder.AddAzureBlobServiceClient("storage")
     .RunAsEmulator(azurite =>
     {
         azurite.WithLifetime(ContainerLifetime.Persistent);
@@ -145,7 +145,7 @@ To add a data volume to the Azure Storage emulator resource, call the `WithDataV
 ```csharp title="C# — AppHost.cs"
 var builder = DistributedApplication.CreateBuilder(args);
 
-var storage = builder.AddAzureStorage("storage")
+var storage = builder.AddAzureBlobServiceClient("storage")
     .RunAsEmulator(azurite =>
     {
         azurite.WithDataVolume();
@@ -163,7 +163,7 @@ To add a data bind mount to the Azure Storage emulator resource, call the `WithD
 ```csharp title="C# — AppHost.cs"
 var builder = DistributedApplication.CreateBuilder(args);
 
-var storage = builder.AddAzureStorage("storage")
+var storage = builder.AddAzureBlobServiceClient("storage")
     .RunAsEmulator(azurite =>
     {
         azurite.WithDataBindMount("../azurite/data");
